@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OperacaoActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutOperacao"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f2f2e5">
+
+        <TextView
+            android:id="@+id/textViewLabelTipoOperacao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="120dp"
+            android:text="Tipo de operação"
+            android:textColor="@color/rifleGreen"
+            android:textSize="16dp"
+            android:textStyle="normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:clipChildren="false"
+            app:layout_constraintStart_toStartOf="@+id/textViewLabelTipoOperacao"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLabelTipoOperacao"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipEntrada"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/chip_background_selector"
+                android:checkable="true"
+                android:checked="true"
+                android:maxWidth="100dp"
+                android:minWidth="100dp"
+                android:text="entrada"
+                android:textAlignment="center"
+                android:textColor="@color/chip_text_selector"
+                app:chipCornerRadius="8dp"
+                app:chipMinHeight="40dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipSaida"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/chip_background_selector"
+                android:checkable="true"
+                android:maxWidth="100dp"
+                android:minWidth="100dp"
+                android:text="saída"
+                android:textAlignment="center"
+                android:textColor="@color/chip_text_selector"
+                app:chipCornerRadius="8dp"
+                app:chipMinHeight="40dp" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+        <TextView
+            android:id="@+id/textViewLabelValorOperacao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="Valor"
+            android:textColor="@color/rifleGreen"
+            android:textSize="16dp"
+            android:textStyle="normal"
+            app:layout_constraintStart_toStartOf="@+id/chipGroup"
+            app:layout_constraintTop_toBottomOf="@+id/chipGroup" />
+
+        <TextView
+            android:id="@+id/textViewLabelCurrency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="R$"
+            android:textSize="28dp"
+            app:layout_constraintStart_toStartOf="@+id/textViewLabelValorOperacao"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLabelValorOperacao" />
+
+        <EditText
+            android:id="@+id/editTextValor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="12dp"
+            android:width="200dp"
+            android:ems="10"
+            android:gravity="start"
+            android:hint="0,00"
+            android:inputType="number"
+            android:maxLength="12"
+            android:maxLines="1"
+            android:textSize="28dp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewLabelCurrency"
+            app:layout_constraintStart_toEndOf="@+id/textViewLabelCurrency"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLabelValorOperacao"
+            app:layout_constraintVertical_bias="0.571" />
+
+        <TextView
+            android:id="@+id/textViewLabelDescricaoOperacao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="Descrição"
+            android:textColor="@color/rifleGreen"
+            android:textSize="16dp"
+            android:textStyle="normal"
+            app:layout_constraintStart_toStartOf="@+id/textViewLabelCurrency"
+            app:layout_constraintTop_toBottomOf="@+id/editTextValor" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textLayoutDescricaoOperacao"
+            android:layout_width="match_parent"
+            android:layout_height="128dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="40dp"
+            android:hint="Uma descrição curta"
+            android:textColorHint="@color/rifleGreen"
+            app:boxStrokeColor="@color/rifleGreen"
+            app:counterEnabled="true"
+            app:counterMaxLength="60"
+            app:helperTextTextColor="@color/rifleGreen"
+            app:hintTextColor="@color/rifleGreen"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/textViewLabelDescricaoOperacao"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLabelDescricaoOperacao">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputDescricaoOperacao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|top"
+                android:inputType="text|textMultiLine"
+                android:minHeight="100dp"
+                android:minLines="1"
+                android:textColor="@color/rifleGreen"
+                android:textColorHighlight="@color/khakiGreen"
+                android:textColorHint="@color/rifleGreen"
+                android:textColorLink="@color/rifleGreen"
+                android:textSize="16dp"
+                android:textStyle="normal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btnAddOperacao"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:height="80dp"
+            android:backgroundTint="#bbbd95"
+            android:text="Salvar"
+            android:textAlignment="center"
+            android:textColor="#3a462e"
+            android:textSize="16dp"
+            android:textStyle="normal"
+            app:cornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:strokeColor="#ADB165"
+            app:strokeWidth="1dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
