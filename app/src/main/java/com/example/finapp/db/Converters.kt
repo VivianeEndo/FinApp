@@ -2,6 +2,7 @@ package com.example.finapp.db
 
 import androidx.room.TypeConverter
 import com.example.finapp.model.TipoOperacao
+import java.util.Date
 
 class Converters {
     @TypeConverter
@@ -9,4 +10,13 @@ class Converters {
 
     @TypeConverter
     fun toType(value: String): TipoOperacao = TipoOperacao.valueOf(value)
+
+    @TypeConverter
+    fun fromTimestamp(value: Long?): Date? {
+        return value?.let { Date(it) }}
+    }
+
+    @TypeConverter
+    fun dateToTimestamp(date: Date?): Long? {
+    return date?.time
 }

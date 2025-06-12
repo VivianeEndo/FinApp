@@ -11,74 +11,95 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
+import com.example.finapp.db.AppDatabase
+import com.example.finapp.db.OfflineOperacoesRepository
+import com.example.finapp.model.Operacao
+import com.example.finapp.model.TipoOperacao
+import com.example.finapp.ui.OperacaoViewModel
+import com.example.finapp.ui.OperacaoViewModelFactory
 import com.google.android.material.chip.Chip
+import java.util.Date
 
 class OperacaoActivity : AppCompatActivity() {
+
+    private lateinit var operacaoViewModel: OperacaoViewModel
+    private lateinit var inputTipoEntrada: Chip
+    private lateinit var inputTipoSaida: Chip
+    private lateinit var inputValor: EditText
+    private lateinit var inputDescricao: EditText
+    private lateinit var btnSalvarOperacao: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_operacao)
 
-        val inputTipoEntrada = findViewById<Chip>(R.id.chipEntrada)
-        val inputTipoSaida = findViewById<Chip>(R.id.chipSaida)
-        val inputValor = findViewById<EditText>(R.id.editTextValor)
-        val inputDescricao = findViewById<EditText>(R.id.textInputDescricaoOperacao)
-        val btnSalvarOperacao = findViewById<Button>(R.id.btnAddOperacao)
+        val dao = AppDatabase.getDatabase(applicationContext).operacaoDao()
+        val repository = OfflineOperacoesRepository(dao)
+        val factory = OperacaoViewModelFactory(repository)
+        operacaoViewModel = ViewModelProvider(this, factory)
+            .get(OperacaoViewModel::class.java)
 
-        val valorOperacao = findViewById<EditText>(R.id.editTextValor)
-        valorOperacao.addTextChangedListener(object : TextWatcher {
-            private var currentString = ""
-
-            override fun afterTextChanged(s: Editable?) {
-                if (s.toString() != currentString) {
-                    valorOperacao.removeTextChangedListener(this)
-                    val clean = s.toString().replace("[^\\d]".toRegex(), "")
-                    val parsed = clean.toDoubleOrNull() ?: 0.0
-                    val formatted = java.text.NumberFormat.getNumberInstance(java.util.Locale("pt", "BR"))
-                        .format(parsed/100)
-                    currentString = formatted
-                    valorOperacao.setText(formatted)
-                    valorOperacao.setSelection(formatted.length)
-                    valorOperacao.addTextChangedListener(this)
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-        })
+        inputTipoEntrada = findViewById<Chip>(R.id.chipEntrada)
+        inputTipoSaida = findViewById<Chip>(R.id.chipSaida)
+        inputValor = findViewById<EditText>(R.id.editTextValor)
+        inputDescricao = findViewById<EditText>(R.id.textInputDescricaoOperacao)
+        btnSalvarOperacao = findViewById<Button>(R.id.btnAddOperacao)
 
         btnSalvarOperacao.setOnClickListener {
-            val valorString = inputValor.text.toString()
-                .replace(".", "")
-                .replace(",", ".")
-            val valor = valorString.toDoubleOrNull() ?: 0.0
-
-            val descricao = inputDescricao.text.toString().trim()
-
-            val tipo = when {
-                inputTipoEntrada.isChecked -> "ENTRADA"
-                inputTipoSaida.isChecked -> "SAIDA"
-                else -> "DESCONHECIDO"
-            }
-
-            Log.d("debug", "Tipo: $tipo")
-            Log.d("debug", "Valor: $valor")
-            Log.d("debug", "Descrição: $descricao")
-
-            if (descricao.isEmpty() || tipo == "DESCONHECIDO") {
-                Toast.makeText(this, "Preencha todos os campos para registrar uma operação!", Toast.LENGTH_SHORT).show()
-            } else {
-                //save to Room
-            }
+            salvarOperacao()
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+    }
+
+    private fun salvarOperacao() {
+        val valorString = inputValor.text.toString()
+            .replace(".", "")
+            .replace(",", ".")
+        if (valorString.isEmpty()) {
+            inputValor.error = "Valor inválido"
+            inputValor.requestFocus()
+            return
+        }
+
+        val tipo = when {
+            inputTipoEntrada.isChecked -> TipoOperacao.ENTRADA
+            inputTipoSaida.isChecked -> TipoOperacao.SAIDA
+            else -> TipoOperacao.DESCONHECIDO
+        }
+
+        val descricao = inputDescricao.text.toString().trim()
+
+        val valor = try {
+            valorString.toDouble()
+        } catch (e: NumberFormatException) {
+            inputValor.error = "Valor inválido"
+            inputValor.requestFocus()
+            return
+        }
+
+        Log.d("debug", "Tipo: $tipo")
+        Log.d("debug", "Valor: $valor")
+        Log.d("debug", "Descrição: $descricao")
+
+        if (descricao.isEmpty() || tipo == TipoOperacao.DESCONHECIDO) {
+            Toast.makeText(this, "Preencha todos os campos para registrar uma operação!", Toast.LENGTH_SHORT).show()
+        } else {
+            //save to Room
+            val novaOperacao = Operacao(
+                tipo = tipo,
+                valor = valor,
+                descricao = descricao
+            )
+            operacaoViewModel.insert(novaOperacao)
+            Toast.makeText(this, "Operação salva!", Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 }

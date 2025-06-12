@@ -14,6 +14,12 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        val btnVerExtrato = findViewById<Button>(R.id.btnExtrato)
+        btnVerExtrato.setOnClickListener {
+            val intent = Intent(this, ExtratoActivity::class.java)
+            startActivity(intent)
+        }
+
         val btnAddOperacao = findViewById<Button>(R.id.btnOperacao)
         btnAddOperacao.setOnClickListener {
             val intent = Intent(this, OperacaoActivity::class.java)
