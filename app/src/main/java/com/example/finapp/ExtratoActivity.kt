@@ -14,38 +14,103 @@ import com.example.finapp.db.OfflineOperacoesRepository
 import com.example.finapp.ui.OperacaoAdapter
 import com.example.finapp.ui.OperacaoViewModel
 import com.example.finapp.ui.OperacaoViewModelFactory
+import com.example.finapp.ui.FilterType
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 
 class ExtratoActivity : AppCompatActivity() {
     private lateinit var adapter: OperacaoAdapter
     private lateinit var viewModel: OperacaoViewModel
+    private lateinit var btnFilterAll: MaterialButton
+    private lateinit var btnFilterEntrada: MaterialButton
+    private lateinit var btnFilterSaida: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_extrato)
 
-        adapter = OperacaoAdapter()
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewOperacoes)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        val dao = AppDatabase.getDatabase(applicationContext).operacaoDao()
-        val repository = OfflineOperacoesRepository(dao)
-        val factory = OperacaoViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, factory)
-            .get(OperacaoViewModel::class.java)
-
-        lifecycleScope.launch {
-            viewModel.operacoes.collect { operacoes ->
-                adapter.submitList(operacoes)
-            }
-        }
+        setupViews()
+        setupDatabase()
+        setupFilterButtons()
+        observeData()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+    }
+
+    private fun setupViews() {
+        adapter = OperacaoAdapter()
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewOperacoes)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        btnFilterAll = findViewById(R.id.btnFilterAll)
+        btnFilterEntrada = findViewById(R.id.btnFilterEntrada)
+        btnFilterSaida = findViewById(R.id.btnFilterSaida)
+    }
+
+    private fun setupDatabase() {
+        val dao = AppDatabase.getDatabase(applicationContext).operacaoDao()
+        val repository = OfflineOperacoesRepository(dao)
+        val factory = OperacaoViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, factory).get(OperacaoViewModel::class.java)
+    }
+
+    private fun setupFilterButtons() {
+        btnFilterAll.setOnClickListener {
+            viewModel.setFilter(FilterType.ALL)
+            updateFilterButtonStates(FilterType.ALL)
+        }
+
+        btnFilterEntrada.setOnClickListener {
+            viewModel.setFilter(FilterType.ENTRADA)
+            updateFilterButtonStates(FilterType.ENTRADA)
+        }
+
+        btnFilterSaida.setOnClickListener {
+            viewModel.setFilter(FilterType.SAIDA)
+            updateFilterButtonStates(FilterType.SAIDA)
+        }
+
+        // Set initial state
+        updateFilterButtonStates(FilterType.ALL)
+    }
+
+    private fun updateFilterButtonStates(selectedFilter: FilterType) {
+        // Reset all buttons to default state
+        btnFilterAll.setBackgroundColor(getColor(R.color.rifleGreen))
+        btnFilterEntrada.setBackgroundColor(getColor(R.color.khakiGreen))
+        btnFilterSaida.setBackgroundColor(getColor(R.color.khakiGreen))
+
+        // Highlight selected button
+        when (selectedFilter) {
+            FilterType.ALL -> {
+                btnFilterAll.setBackgroundColor(getColor(R.color.rifleGreen))
+                btnFilterEntrada.setBackgroundColor(getColor(R.color.sage))
+                btnFilterSaida.setBackgroundColor(getColor(R.color.sage))
+            }
+            FilterType.ENTRADA -> {
+                btnFilterEntrada.setBackgroundColor(getColor(R.color.rifleGreen))
+                btnFilterAll.setBackgroundColor(getColor(R.color.sage))
+                btnFilterSaida.setBackgroundColor(getColor(R.color.sage))
+            }
+            FilterType.SAIDA -> {
+                btnFilterSaida.setBackgroundColor(getColor(R.color.rifleGreen))
+                btnFilterAll.setBackgroundColor(getColor(R.color.sage))
+                btnFilterEntrada.setBackgroundColor(getColor(R.color.sage))
+            }
+        }
+    }
+
+    private fun observeData() {
+        lifecycleScope.launch {
+            viewModel.getFilteredOperacoes().collect { operacoes ->
+                adapter.submitList(operacoes)
+            }
         }
     }
 }
