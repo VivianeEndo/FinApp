@@ -47,6 +47,8 @@ class OperacaoActivity : AppCompatActivity() {
         inputDescricao = findViewById<EditText>(R.id.textInputDescricaoOperacao)
         btnSalvarOperacao = findViewById<Button>(R.id.btnAddOperacao)
 
+        alternarTipo()
+
         btnSalvarOperacao.setOnClickListener {
             salvarOperacao()
         }
@@ -55,6 +57,30 @@ class OperacaoActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+    }
+
+    private fun alternarTipo() {
+        inputTipoEntrada.isChecked = true //default
+
+        inputTipoEntrada.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                inputTipoSaida.isChecked = false
+            } else {
+                if (!inputTipoSaida.isChecked) {
+                    inputTipoEntrada.isChecked = true
+                }
+            }
+        }
+
+        inputTipoSaida.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                inputTipoEntrada.isChecked = false
+            } else {
+                if (!inputTipoEntrada.isChecked) {
+                    inputTipoSaida.isChecked = true
+                }
+            }
         }
     }
 
