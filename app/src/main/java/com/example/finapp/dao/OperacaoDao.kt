@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.finapp.model.Operacao
+import com.example.finapp.model.TipoOperacao
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -14,4 +15,7 @@ interface OperacaoDao {
 
     @Query("SELECT * FROM operacoes ORDER BY id DESC")
     fun getAllOperacoes(): Flow<List<Operacao>>
+    
+    @Query("SELECT * FROM operacoes WHERE tipo = :tipoOperacao ORDER BY id DESC")
+    fun getOperacoesByTipo(tipoOperacao: TipoOperacao): Flow<List<Operacao>>
 }
