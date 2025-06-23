@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
@@ -16,21 +17,18 @@ class OperacaoViewModel(private val repository: OperacoesRepository): ViewModel(
     private val _filterType = MutableStateFlow(FilterType.ALL)
     val filterType: StateFlow<FilterType> = _filterType
     
-    val operacoes: Flow<List<Operacao>> = repository.getAllItemsStream()
-        .flowOn(Dispatchers.IO)
+    val operacoes: Flow<List<Operacao>> = _filterType.flatMapLatest { filter ->
+        when (filter) {
+            FilterType.ALL -> repository.getAllItemsStream()
+            FilterType.ENTRADA -> repository.getItemsByTipoStream(TipoOperacao.ENTRADA)
+            FilterType.SAIDA -> repository.getItemsByTipoStream(TipoOperacao.SAIDA)
+        }
+    }.flowOn(Dispatchers.IO)
 
     fun setFilter(filterType: FilterType) {
         _filterType.value = filterType
     }
     
-    fun getFilteredOperacoes(): Flow<List<Operacao>> {
-        return when (_filterType.value) {
-            FilterType.ALL -> repository.getAllItemsStream()
-            FilterType.ENTRADA -> repository.getItemsByTipoStream(TipoOperacao.ENTRADA)
-            FilterType.SAIDA -> repository.getItemsByTipoStream(TipoOperacao.SAIDA)
-        }.flowOn(Dispatchers.IO)
-    }
-
     fun insert(operacao: Operacao) = viewModelScope.launch {
         repository.insertItem(operacao)
     }

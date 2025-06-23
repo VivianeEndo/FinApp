@@ -1,6 +1,7 @@
 package com.example.finapp
 
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,6 +17,7 @@ import com.example.finapp.ui.OperacaoViewModel
 import com.example.finapp.ui.OperacaoViewModelFactory
 import com.example.finapp.ui.FilterType
 import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 class ExtratoActivity : AppCompatActivity() {
@@ -24,6 +26,7 @@ class ExtratoActivity : AppCompatActivity() {
     private lateinit var btnFilterAll: MaterialButton
     private lateinit var btnFilterEntrada: MaterialButton
     private lateinit var btnFilterSaida: MaterialButton
+    private lateinit var btnVoltar: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +54,11 @@ class ExtratoActivity : AppCompatActivity() {
         btnFilterAll = findViewById(R.id.btnFilterAll)
         btnFilterEntrada = findViewById(R.id.btnFilterEntrada)
         btnFilterSaida = findViewById(R.id.btnFilterSaida)
+
+        btnVoltar = findViewById(R.id.btnVoltarHome)
+        btnVoltar.setOnClickListener {
+            finish()
+        }
     }
 
     private fun setupDatabase() {
@@ -63,21 +71,15 @@ class ExtratoActivity : AppCompatActivity() {
     private fun setupFilterButtons() {
         btnFilterAll.setOnClickListener {
             viewModel.setFilter(FilterType.ALL)
-            updateFilterButtonStates(FilterType.ALL)
         }
 
         btnFilterEntrada.setOnClickListener {
             viewModel.setFilter(FilterType.ENTRADA)
-            updateFilterButtonStates(FilterType.ENTRADA)
         }
 
         btnFilterSaida.setOnClickListener {
             viewModel.setFilter(FilterType.SAIDA)
-            updateFilterButtonStates(FilterType.SAIDA)
         }
-
-        // Set initial state
-        updateFilterButtonStates(FilterType.ALL)
     }
 
     private fun updateFilterButtonStates(selectedFilter: FilterType) {
@@ -108,8 +110,13 @@ class ExtratoActivity : AppCompatActivity() {
 
     private fun observeData() {
         lifecycleScope.launch {
-            viewModel.getFilteredOperacoes().collect { operacoes ->
+            viewModel.operacoes.collect { operacoes ->
                 adapter.submitList(operacoes)
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.filterType.collect { filter ->
+                updateFilterButtonStates(filter)
             }
         }
     }
