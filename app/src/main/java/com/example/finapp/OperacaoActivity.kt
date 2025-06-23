@@ -29,6 +29,7 @@ class OperacaoActivity : AppCompatActivity() {
     private lateinit var inputValor: EditText
     private lateinit var inputDescricao: EditText
     private lateinit var btnSalvarOperacao: Button
+    private lateinit var btnVoltar: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,11 +47,16 @@ class OperacaoActivity : AppCompatActivity() {
         inputValor = findViewById<EditText>(R.id.editTextValor)
         inputDescricao = findViewById<EditText>(R.id.textInputDescricaoOperacao)
         btnSalvarOperacao = findViewById<Button>(R.id.btnAddOperacao)
+        btnVoltar = findViewById(R.id.btnVoltar)
 
         alternarTipo()
 
         btnSalvarOperacao.setOnClickListener {
             salvarOperacao()
+        }
+
+        btnVoltar.setOnClickListener {
+            finish()
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->

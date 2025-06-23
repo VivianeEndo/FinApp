@@ -5,13 +5,40 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/cream"
     tools:context=".OperacaoActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutOperacao"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#f2f2e5">
+        android:background="#f2f2e5"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
+
+        <Button
+            android:id="@+id/btnVoltar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:width="0dp"
+            android:height="32sp"
+            android:background="@android:color/transparent"
+            android:drawablePadding="0dp"
+            android:paddingStart="0dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="0dp"
+            android:paddingBottom="4dp"
+            android:text="Voltar"
+            android:textAlignment="textStart"
+            android:textColor="#3a462e"
+            android:typeface="sans"
+            app:cornerRadius="8dp"
+            app:icon="@drawable/baseline_arrow_back_24"
+            app:iconTint="#3a462e"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textViewLabelTipoOperacao"
