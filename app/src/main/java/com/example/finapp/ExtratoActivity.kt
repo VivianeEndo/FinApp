@@ -2,6 +2,7 @@ package com.example.finapp
 
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -27,6 +28,7 @@ class ExtratoActivity : AppCompatActivity() {
     private lateinit var btnFilterEntrada: MaterialButton
     private lateinit var btnFilterSaida: MaterialButton
     private lateinit var btnVoltar: Button
+    private lateinit var textViewSaldo: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,8 +56,8 @@ class ExtratoActivity : AppCompatActivity() {
         btnFilterAll = findViewById(R.id.btnFilterAll)
         btnFilterEntrada = findViewById(R.id.btnFilterEntrada)
         btnFilterSaida = findViewById(R.id.btnFilterSaida)
-
         btnVoltar = findViewById(R.id.btnVoltarHome)
+        textViewSaldo = findViewById(R.id.textViewSaldo)
         btnVoltar.setOnClickListener {
             finish()
         }
@@ -117,6 +119,19 @@ class ExtratoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.filterType.collect { filter ->
                 updateFilterButtonStates(filter)
+            }
+        }
+        // sempre observar todas as operações para o saldo
+        lifecycleScope.launch {
+            viewModel.allOperacoes.collect { allOperacoes ->
+                val saldo = allOperacoes.sumOf {
+                    when (it.tipo) {
+                        com.example.finapp.model.TipoOperacao.ENTRADA -> it.valor
+                        com.example.finapp.model.TipoOperacao.SAIDA -> -it.valor
+                        else -> 0.0
+                    }
+                }
+                textViewSaldo.text = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("pt", "BR")).format(saldo)
             }
         }
     }
