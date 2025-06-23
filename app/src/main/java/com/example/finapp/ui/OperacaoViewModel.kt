@@ -25,6 +25,8 @@ class OperacaoViewModel(private val repository: OperacoesRepository): ViewModel(
         }
     }.flowOn(Dispatchers.IO)
 
+    val allOperacoes: Flow<List<Operacao>> = repository.getAllItemsStream()
+
     fun setFilter(filterType: FilterType) {
         _filterType.value = filterType
     }
